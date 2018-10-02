@@ -1,14 +1,13 @@
 import java.io.*;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.charset.StandardCharsets;
+import java.net.URL;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static sun.nio.ch.IOStatus.EOF;
 
-public class FileReaderPL {
+public class FileReaderPlStriped {
 
     //public static String FileName = "c:\\PROJECTS\\COURSES\\test_6\\DATA\\20120901_122335_Export_demo_date_OpenCart_products_utf8.csv" ;
     //public static String FileName = "c:\\download\\gradle-4.10.2-bin.zip" ;
@@ -24,16 +23,12 @@ public class FileReaderPL {
         testFileReader();
 
         for(int i=0; i < 20; i++) {
-            read1_MemoryMap();
-            read2_clearRead();
-            read3_andCompare();
-            read4_stringsByHand();
-            read2_parallel_test();
+            read3();
+            read4();
+            read5();
+
+
             System.out.println("-----") ;
-
-
-
-
         }
 
         if(testOriginal)
@@ -100,121 +95,8 @@ public class FileReaderPL {
         //file.delete();
     }
 
-    static void read1_MemoryMap() throws IOException {
-        File file = new File(FileName);
-        long start2 = System.nanoTime();
 
-        final FileChannel channel = new FileInputStream(FileName).getChannel();
-        MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
-
-
-        channel.close();
-
-        long time2 = System.nanoTime() - start2;
-        System.out.printf("read1 ==>> Took %.3f milli seconds to read to a %d MB file, rate: %.1f MB/s%n",
-                time2 / 1e6, file.length() >> 20, file.length() * 1000.0 / time2);
-
-    }
-
-    static void read2_clearRead() throws IOException {
-
-
-
-        File file = new File(FileName);
-        FileInputStream fis = new FileInputStream(file );
-        long start2 = System.nanoTime();
-
-
-        long cnt3 = 0;
-        final int BUFSIZE = 1024*4;//1024;
-        byte buf[] = new byte[BUFSIZE];
-        int len;
-        while ((len = fis.read(buf)) != -1) {
-
-            for (int i = 0; i < len; i++) {
-                if(true) continue;
-                if (buf[i] == 'A') {
-                    cnt3++;
-                }
-            }
-        }
-        fis.close();
-
-        long time2 = System.nanoTime() - start2;
-        System.out.printf("read2 ==>> Took %.3f seconds to read to a %d MB file, rate: %.1f MB/s%n",
-                time2 / 1e9, file.length() >> 20, file.length() * 1000.0 / time2);
-    }
-
-    static void read2_parallel_test(){
-
-        File file = new File(FileName);
-        long start2 = System.nanoTime();
-
-        Integer [] arr = {1,2,3,4,5,6,7,8,9,0 };
-        Stream<Integer> numbersStream = Stream.of(arr);
-        double aggSpeed = numbersStream.parallel().mapToInt( (x)->  {return FileReaderPL.read2_parallel();  }).sum() ;//collect(Collectors.averagingInt())
-
-
-        long time2 = System.nanoTime() - start2;
-        int speed =(int)( file.length() * 1000.0 / time2);
-
-            System.out.printf("read2_parallel_test ==>> Took %.3f seconds to read to a %d files of %d MB , rate: %.1f MB/s%n",
-                    time2 / 1e9, arr.length ,file.length() >> 20, arr.length * file.length() * 1000.0 / time2);
-
-        //System.out.println("read2_parallel_test  aggregated speed = " + aggSpeed) ;
-        System.out.println("=====") ;
-
-    }
-
-    static int read2_parallel()  {
-
-        // прочитать данные из файла, используя буферизацию
-        // и прямой доступ к буферу
-        try {
-
-            File file = new File(FileName);
-            FileInputStream fis = null;
-            fis = new FileInputStream(file );
-            long start2 = System.nanoTime();
-
-
-            long cnt3 = 0;
-            final int BUFSIZE = 1024*4;//1024;
-            byte buf[] = new byte[BUFSIZE];
-            int len;
-            while ((len = fis.read(buf)) != -1) {
-
-                if(true) continue;
-                for (int i = 0; i < len; i++) {
-
-                    if (buf[i] == 'A')
-                    {
-                        cnt3++;
-                    }
-                }
-            }
-            fis.close();
-
-            long time2 = System.nanoTime() - start2;
-            int speed =(int)( file.length() * 1000.0 / time2);
-/*
-            System.out.printf("read3 ==>> Took %.3f seconds to read to a %d MB file, rate: %.1f MB/s%n",
-                    time2 / 1e9, file.length() >> 20, file.length() * 1000.0 / time2);
-*/
-
-            return speed;
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return -1;
-
-    }
-
-    static void read3_andCompare()  {
+    static void read3()  {
 
         // прочитать данные из файла, используя буферизацию
         // и прямой доступ к буферу
@@ -222,6 +104,7 @@ public class FileReaderPL {
 
         File file = new File(FileName);
         FileInputStream fis = null;
+
             fis = new FileInputStream(file );
         long start2 = System.nanoTime();
 
@@ -230,12 +113,9 @@ public class FileReaderPL {
         final int BUFSIZE = 1024*4;//1024;
         byte buf[] = new byte[BUFSIZE];
         int len;
-        while ((len = fis.read(buf)) != -1) {
-
+        for (int n=0;(len = fis.read(buf)) != -1 &&  n< 10000; n++) {
             for (int i = 0; i < len; i++) {
-
-                if (buf[i] == 'A')
-                {
+                if (buf[i] == 'A' || buf[i] == EOF) {
                     cnt3++;
                 }
             }
@@ -256,7 +136,7 @@ public class FileReaderPL {
 
 
 
-    static void read4_stringsByHand() throws IOException {
+    static void read4() throws IOException {
 
         // прочитать данные из файла, используя буферизацию
         // и прямой доступ к буферу
@@ -268,23 +148,23 @@ public class FileReaderPL {
 
         long cnt3 = 0;
         final int BUFSIZE = 1024*8;//1024;
+        byte buffer[][] = new byte[10000][BUFSIZE];
         byte buf[] = new byte[BUFSIZE];
         byte new_buf[] = new byte[BUFSIZE];
         byte str[] = new byte[BUFSIZE];
 
         int len;
-
-        while ((len = fis.read(buf)) != -1) {
+        //buf = buffer[0];
+        for (int n=0;  (len = fis.read(buf)) != -1 &&  n< 10000; n++) {
             int p1 =0, p2 =0;
             for (int i = 0; i < len; i++) {
 
-                //if(true) continue;
+                if(true)
+                    continue;
 
                 if (buf[i] == '\r' || buf[i] == EOF) {
                     p2=i;
                     cnt3++;
-
-                    //if(true) continue;
 
                     getString(p1, p2, buf, str);
 //                    str = Arrays.copyOfRange(buf, p1,p2);
@@ -305,6 +185,8 @@ public class FileReaderPL {
 //                System.out.println("STR =" + new_str);
 
             }
+
+            buf = buffer[n];
         }
 
         //System.out.println("cnt=" + cnt3);
@@ -313,6 +195,40 @@ public class FileReaderPL {
         long time2 = System.nanoTime() - start2;
         System.out.printf("read4 ==>> Took %.3f seconds to read to a %d MB file, rate: %.1f MB/s%n",
                 time2 / 1e9, file.length() >> 20, file.length() * 1000.0 / time2);
+
+
+    }
+
+
+    static void read5() throws IOException {
+
+        String fileName = "file:\\c:\\PROJECTS\\COURSES\\FastDataTransfer\\DATA\\business-price-indexes-june-2018-quarter.csv";
+        File file = new File(FileName);
+        //FileInputStream fis = new FileInputStream(FileName );
+
+        long start2 = System.nanoTime();
+
+        InputStream in = new URL( fileName ).openStream();
+        long i=0;
+        try {
+            InputStreamReader inR = new InputStreamReader( in );
+            BufferedReader buf = new BufferedReader( inR );
+            String line;
+            for (int n=0; ( line = buf.readLine() ) != null && n < 100000; n++ ) {
+                i+= line.length();
+            }
+        } finally {
+            in.close();
+            //fis.close();
+        }
+
+
+        long time2 = System.nanoTime() - start2;
+        System.out.printf("read5 ==>> Took %.3f seconds to read to a %d MB file, rate: %.1f MB/s%n",
+                time2 / 1e9, file.length() >> 20, file.length() * 1000.0 / time2);
+
+        System.out.println( "" + i );
+
     }
 
 

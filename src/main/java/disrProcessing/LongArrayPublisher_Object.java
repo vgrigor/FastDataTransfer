@@ -54,7 +54,8 @@ public final class LongArrayPublisher_Object implements Runnable
                     //event.ll[j] = i + j;
                     //event.ll[j] = 's';
                     //event.ll.setCharAt(j,'s');
-                    event.publish("1234567890123");
+                    //event.publish("1234567890123");
+                    event.publish("1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890");
                 }
                 ringBuffer.publish(sequence);
             }

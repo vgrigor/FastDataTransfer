@@ -18,11 +18,14 @@ package disrProcessing;
 public final class LongArray_Object
 {
     public static final int ARRAY_SIZE = 13;
+    public static final int ELEMENT_SIZE = 130;
     //public long[] ll = new long[3];
     //public byte[] ll = new byte[3];
     //public String ll = new String("qqq");
     //public StringBuilder ll = new StringBuilder("1234567890123");
     public StringBuilder ll = new StringBuilder(ARRAY_SIZE);
+    //public byte[] ll = new byte[ELEMENT_SIZE];
+
 
     public LongArray_Object(){
         for(int i = 0; i < ARRAY_SIZE; i++){
