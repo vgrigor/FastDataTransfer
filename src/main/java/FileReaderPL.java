@@ -1,4 +1,5 @@
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
@@ -107,11 +108,24 @@ public class FileReaderPL {
         final FileChannel channel = new FileInputStream(FileName).getChannel();
         MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
 
+        byte[] result = new byte[1000];
+        long size = file.length();
+        long result_size =0;
+        for(int i=0; i < size/1000 ;i++ )
+        if (buffer != null) {
+
+                    buffer.get(result, 0, 1000 );
+                    //result_size += result.length;
+            //charBuffer = Charset.forName("UTF-8").decode(mappedByteBuffer);
+        }
+        if(buffer.remaining() < 1000)
+            buffer.get(result, 0, buffer.remaining() );
+
 
         channel.close();
 
         long time2 = System.nanoTime() - start2;
-        System.out.printf("read1 ==>> Took %.3f milli seconds to read to a %d MB file, rate: %.1f MB/s%n",
+        System.out.printf("read1_MemoryMap ==>> Took %.3f milli seconds to read to a %d MB file, rate: %.1f MB/s%n",
                 time2 / 1e6, file.length() >> 20, file.length() * 1000.0 / time2);
 
     }
