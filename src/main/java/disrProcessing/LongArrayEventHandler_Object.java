@@ -21,7 +21,7 @@ import disruptor.PaddedLong;
 
 import java.util.concurrent.CountDownLatch;
 
-public final class LongArrayEventHandler_Object implements EventHandler<LongArray_Object>, BatchStartAware
+public final class LongArrayEventHandler_Object  implements EventHandler<LongArray_Object>, BatchStartAware
 {
     private final PaddedLong value = new PaddedLong();
     private final PaddedLong batchesProcessed = new PaddedLong();
@@ -77,4 +77,6 @@ public final class LongArrayEventHandler_Object implements EventHandler<LongArra
     {
         batchesProcessed.increment();
     }
+
+
 }

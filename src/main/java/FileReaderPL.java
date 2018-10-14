@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 
 import static sun.nio.ch.IOStatus.EOF;
 
-public class FileReaderPL {
+public class FileReaderPL  implements DataSupplier {
 
     //public static String FileName = "c:\\PROJECTS\\COURSES\\test_6\\DATA\\20120901_122335_Export_demo_date_OpenCart_products_utf8.csv" ;
     //public static String FileName = "c:\\download\\gradle-4.10.2-bin.zip" ;
@@ -367,5 +367,10 @@ public class FileReaderPL {
         System.out.printf("Took %.3f seconds to read to a %d MB file, rate: %.1f MB/s%n",
                 time2 / 1e9, file.length() >> 20, file.length() * 1000.0 / time2);
         file.delete();
+    }
+
+    @Override
+    public String putData() {
+        return null;
     }
 }

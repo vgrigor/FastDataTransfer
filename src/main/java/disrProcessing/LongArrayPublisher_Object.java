@@ -19,12 +19,23 @@ import com.lmax.disruptor.RingBuffer;
 
 import java.util.concurrent.CyclicBarrier;
 
-public final class LongArrayPublisher_Object implements Runnable
+public final class LongArrayPublisher_Object extends BasePublisher implements Runnable
 {
-    private final CyclicBarrier cyclicBarrier;
-    private final RingBuffer<LongArray_Object> ringBuffer;
-    private final long iterations;
-    private final long arraySize;
+
+
+    //@Override
+    public  BasePublisher createInstance(
+            final CyclicBarrier cyclicBarrier,
+            final RingBuffer<LongArray_Object> ringBuffer,
+            final long iterations,
+            final long arraySize) {
+
+        return new LongArrayPublisher_Object(
+        cyclicBarrier,
+        ringBuffer,
+        iterations,
+        arraySize);
+    }
 
     public LongArrayPublisher_Object(
             final CyclicBarrier cyclicBarrier,
@@ -32,15 +43,21 @@ public final class LongArrayPublisher_Object implements Runnable
             final long iterations,
             final long arraySize)
     {
-        this.cyclicBarrier = cyclicBarrier;
-        this.ringBuffer = ringBuffer;
-        this.iterations = iterations;
-        this.arraySize = arraySize;
+        super(cyclicBarrier, ringBuffer, iterations, arraySize);
+
     }
+
+    public static BasePublisher simpleInstance(){
+        return new LongArrayPublisher_Object(null,null,0,0);
+    }
+
+
 
     @Override
     public void run()
     {
+
+        String pubString = "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890";
         try
         {
             cyclicBarrier.await();
@@ -54,8 +71,9 @@ public final class LongArrayPublisher_Object implements Runnable
                     //event.ll[j] = i + j;
                     //event.ll[j] = 's';
                     //event.ll.setCharAt(j,'s');
-                    //event.publish("1234567890123");
-                    event.publish("1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890");
+                    //event.publish(pubString);
+                    event.publish(new String ("1234567890123"));
+                    //event.publish("1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890");
                 }
                 ringBuffer.publish(sequence);
             }
@@ -65,4 +83,6 @@ public final class LongArrayPublisher_Object implements Runnable
             throw new RuntimeException(ex);
         }
     }
+
+
 }
