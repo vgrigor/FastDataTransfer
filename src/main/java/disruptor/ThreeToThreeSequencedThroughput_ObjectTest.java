@@ -16,8 +16,8 @@ package disruptor;/*
 
 import com.lmax.disruptor.*;
 import com.lmax.disruptor.util.DaemonThreadFactory;
-import disrProcessing.LongArrayEventHandler_Object;
-import disrProcessing.LongArrayPublisher_Object;
+import disrProcessing.userlogic.LongArrayEventHandler_Object;
+import disrProcessing.userlogic.LongArrayPublisher_Object;
 import disrProcessing.LongArray_Object;
 
 import java.util.concurrent.*;

@@ -13,20 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package disrProcessing;
+package disrProcessing.userlogic;
 
 import com.lmax.disruptor.BatchStartAware;
 import com.lmax.disruptor.EventHandler;
+import disrProcessing.LongArray_Object;
 import disruptor.PaddedLong;
 
 import java.util.concurrent.CountDownLatch;
 
-public final class LongArrayEventHandler_Object  implements EventHandler<LongArray_Object>, BatchStartAware
+public final class LongArrayEventHandler_Object  extends BaseEventHandler<LongArray_Object>//implements EventHandler<LongArray_Object>, BatchStartAware
 {
     private final PaddedLong value = new PaddedLong();
     private final PaddedLong batchesProcessed = new PaddedLong();
     private long count;
     private CountDownLatch latch;
+
+
+
 
     public long getValue()
     {

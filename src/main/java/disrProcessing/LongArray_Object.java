@@ -41,6 +41,15 @@ public final class LongArray_Object
         ll.append(str);
     };
 
+
+    public void publish(byte[] data){
+        //ll.replace(0,str.length(),str)  ;
+        //ll.setCharAt(2,'w');
+
+        ll.setLength(0);
+        ll.append(new String(data));
+    };
+
     public void transform(int i, char c ){
         ll.setCharAt(i,c);
 

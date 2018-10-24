@@ -15,11 +15,11 @@
  */
 package disrProcessing;
 
-import com.lmax.disruptor.EventFactory;
-import com.lmax.disruptor.RingBuffer;
-import com.lmax.disruptor.SequenceBarrier;
-import com.lmax.disruptor.YieldingWaitStrategy;
+import com.lmax.disruptor.*;
 import com.lmax.disruptor.util.DaemonThreadFactory;
+import disrProcessing.userlogic.BaseEventHandler;
+import disrProcessing.userlogic.LongArrayEventHandler_Object;
+import disrProcessing.userlogic.LongArrayPublisher_Object;
 import disruptor.AbstractPerfTestDisruptor;
 import disruptor.MultiBufferBatchEventProcessor;
 import disruptor.PerfTestContext;
@@ -71,9 +71,13 @@ public final class ThreeToThreeSequencedThroughput_ObjectTest_Common<Publisher e
         Executors.newFixedThreadPool(NUM_PUBLISHERS + 1, DaemonThreadFactory.INSTANCE);
     private final CyclicBarrier cyclicBarrier = new CyclicBarrier(NUM_PUBLISHERS + 1);
 
-    public ThreeToThreeSequencedThroughput_ObjectTest_Common(BasePublisher basePublisher, int NUM_PUBLISHERS){
-        this.basePublisher = basePublisher;
+    BaseEventHandler handler;
+
+    public ThreeToThreeSequencedThroughput_ObjectTest_Common(BasePublisher basePublisher, int NUM_PUBLISHERS,
+                                                             BaseEventHandler eventHandler){
+        this.basePublisher  = basePublisher;
         this.NUM_PUBLISHERS = NUM_PUBLISHERS;
+        this.handler   = eventHandler;
 
         init();
     }
@@ -88,7 +92,8 @@ public final class ThreeToThreeSequencedThroughput_ObjectTest_Common<Publisher e
     private /*final*/ BasePublisher[] valuePublishers = new BasePublisher[NUM_PUBLISHERS];
 
 
-    private final LongArrayEventHandler_Object handler = new LongArrayEventHandler_Object();
+    //private final LongArrayEventHandler_Object handler = new LongArrayEventHandler_Object();
+
     private  MultiBufferBatchEventProcessor<LongArray_Object> batchEventProcessor;
 
     int publishers_count =0;
@@ -181,12 +186,20 @@ public final class ThreeToThreeSequencedThroughput_ObjectTest_Common<Publisher e
 
     public static void main(String[] args) throws Exception
     {
-        new ThreeToThreeSequencedThroughput_ObjectTest_Common(LongArrayPublisher_Object.simpleInstance(),3 ).testImplementations();
+        //new ThreeToThreeSequencedThroughput_ObjectTest_Common(LongArrayPublisher_Object.simpleInstance(),3 ).testImplementations();
+        new ThreeToThreeSequencedThroughput_ObjectTest_Common(LongArrayPublisher_Object.simpleInstance(),3 ,
+                new LongArrayEventHandler_Object()).testImplementations();
+
     }
 
-    public void main_run() throws Exception
+    public void main_run()
     {
-        this.testImplementations();
+
+        try {
+            this.testImplementations();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         //new ThreeToThreeSequencedThroughput_ObjectTest_Common( LongArrayPublisher_Object.simpleInstance() ).testImplementations();
     }
 }

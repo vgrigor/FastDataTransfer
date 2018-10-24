@@ -1,10 +1,10 @@
+import interfaces.DataReceiver;
+import interfaces.DataSupplier;
+
 import java.io.*;
-import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static sun.nio.ch.IOStatus.EOF;
@@ -25,15 +25,12 @@ public class FileReaderPL  implements DataSupplier {
         testFileReader();
 
         for(int i=0; i < 20; i++) {
-            read1_MemoryMap();
+            new FileReaderPL().read1_MemoryMap();
             read2_clearRead();
             read3_andCompare();
             read4_stringsByHand();
             read2_parallel_test();
             System.out.println("-----") ;
-
-
-
 
         }
 
@@ -41,6 +38,19 @@ public class FileReaderPL  implements DataSupplier {
         for (int mb : new int[]{50, 100, 250, 500, 1000, 2000})
             testFileSize_Original(mb);
     }
+
+    @Override
+    public byte[] onDataReady( byte[] data, DataReceiver dataReceiver ) {
+        dataReceiver.publishData( data );
+        return data;
+    }
+
+    DataReceiver  dataReceiver;
+    public void setDataReceiver(DataReceiver  dataReceiver ){
+        this.dataReceiver = dataReceiver;
+    }
+
+
 
     private static void testFileSize_Original(int mb) throws IOException {
         File file = File.createTempFile("test", ".txt");
@@ -101,7 +111,7 @@ public class FileReaderPL  implements DataSupplier {
         //file.delete();
     }
 
-    static void read1_MemoryMap() throws IOException {
+    void read1_MemoryMap() throws IOException {
         File file = new File(FileName);
         long start2 = System.nanoTime();
 
@@ -115,7 +125,9 @@ public class FileReaderPL  implements DataSupplier {
         if (buffer != null) {
 
                     buffer.get(result, 0, 1000 );
-                    //result_size += result.length;
+
+                    onDataReady( result, dataReceiver );
+            //result_size += result.length;
             //charBuffer = Charset.forName("UTF-8").decode(mappedByteBuffer);
         }
         if(buffer.remaining() < 1000)
@@ -369,8 +381,5 @@ public class FileReaderPL  implements DataSupplier {
         file.delete();
     }
 
-    @Override
-    public String putData() {
-        return null;
-    }
+
 }

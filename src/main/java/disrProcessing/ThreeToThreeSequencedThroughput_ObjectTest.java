@@ -20,6 +20,8 @@ import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.SequenceBarrier;
 import com.lmax.disruptor.YieldingWaitStrategy;
 import com.lmax.disruptor.util.DaemonThreadFactory;
+import disrProcessing.userlogic.LongArrayEventHandler_Object;
+import disrProcessing.userlogic.LongArrayPublisher_Object;
 import disruptor.AbstractPerfTestDisruptor;
 import disruptor.MultiBufferBatchEventProcessor;
 import disruptor.PerfTestContext;
