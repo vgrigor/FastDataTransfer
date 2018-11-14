@@ -63,25 +63,21 @@ public final class LongArrayPublisher_Object extends BasePublisher implements Ru
 
     //@Override
     public  BasePublisher createInstance(
-            final CyclicBarrier cyclicBarrier,
-            final RingBuffer<LongArray_Object> ringBuffer,
-            final long iterations,
-            final long arraySize) {
+            DisruptorContext disruptorContext) {
 
         return new LongArrayPublisher_Object(
-        cyclicBarrier,
-        ringBuffer,
-        iterations,
-        arraySize);
+                disruptorContext);
     }
 
-    public LongArrayPublisher_Object(
-            final CyclicBarrier cyclicBarrier,
+    public LongArrayPublisher_Object( DisruptorContext disruptorContext
+/*            final CyclicBarrier cyclicBarrier,
             final RingBuffer<LongArray_Object> ringBuffer,
             final long iterations,
-            final long arraySize)
+            final long arraySize*/
+    )
     {
-        super(cyclicBarrier, ringBuffer, iterations, arraySize);
+        //super(cyclicBarrier, ringBuffer, iterations, arraySize);
+        super(disruptorContext.getCyclicBarrier(), disruptorContext.getRingBuffer(), disruptorContext.getIterations(), disruptorContext.ARRAY_SIZE);
 
     }
 
@@ -89,7 +85,7 @@ public final class LongArrayPublisher_Object extends BasePublisher implements Ru
 
 
     public static BasePublisher simpleInstance(){
-        return new LongArrayPublisher_Object(null,null,0,0);
+        return new LongArrayPublisher_Object(null);
     }
 
 
